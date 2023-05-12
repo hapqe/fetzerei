@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    game:
+      build: ./game
+      volumes: 
+        - ./game:/game
+      ports:
+        - "4001:4001"
+    server:
+      build: .
+      volumes: 
+        - .:/app
+      ports:
+        - "4000:4000"
+      depends_on:
+        - game
