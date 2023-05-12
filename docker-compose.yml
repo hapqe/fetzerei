@@ -7,11 +7,30 @@ services:
         - ./game:/game
       ports:
         - "4001:4001"
-    server:
+    game-build:
+      build: ./game
+      volumes: 
+        - ./game:/game
+      command: npm run build
+    dev:
       build: .
       volumes: 
         - .:/app
       ports:
         - "4000:4000"
+      environment:
+        - NODE_ENV=development
       depends_on:
         - game
+    server: 
+      build: .
+      volumes: 
+        - .:/app
+        - ./game/build:/app/game/build
+      ports:
+        - "80:80"
+      environment:
+        - NODE_ENV=production
+        - PORT=80
+      depends_on:
+        - game-build

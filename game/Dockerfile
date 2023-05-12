@@ -12,5 +12,4 @@ ENV PORT=4001
 
 EXPOSE 4001
 
-# npm run dev
 CMD ["npm", "run", "dev"]
