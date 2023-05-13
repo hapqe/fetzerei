@@ -1,12 +1,10 @@
 <script lang="ts">
   import io from 'socket.io-client'
-  // optional
   let id: string = undefined;
   
-  let uri = window.location.href;
-  uri = uri.substring(0, uri.lastIndexOf('/'));
+  let origin = window.location.origin;
   
-  const socket = io(uri)
+  const socket = io(origin)
 
   function click() {
     socket.emit('room', {}, (room) => {

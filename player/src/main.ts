@@ -1,7 +1,7 @@
 import './app.css'
-import Game from './Game.svelte'
+import Player from './Player.svelte'
 
-const app = new Game({
+const app = new Player({
   target: document.getElementById('app'),
 })
 

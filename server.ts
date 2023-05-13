@@ -12,28 +12,63 @@ const port = process.env.PORT || 4000;
 const dev = process.env.NODE_ENV !== 'production';
 
 if(dev) {
-    app.use('/', proxy({ target: 'http://game:4001', changeOrigin: true }));
-    // app.use('/', proxy({ target: 'http://player:4002', changeOrigin: true }));
+    const playerProxy = proxy({ target: 'http://player:4002', changeOrigin: true });
+    const gameProxy = proxy({ target: 'http://game:4001', changeOrigin: true });
+
+    app.use('/r/:room', proxy({ target: 'http://player:4002', changeOrigin: true }))
+    app.use('/', proxy({ target: 'http://game:4001', changeOrigin: true }))
 }
 else {
+    app.use('/room', express.static(path.join(__dirname, '/player/dist')));
+    app.use('/assets', express.static(path.join(__dirname, '/player/dist/assets')));
     app.use('/', express.static(path.join(__dirname, '/game/dist')));
 }
 
-const rooms: Map<string, string> = new Map();
+class Room {
+    public host: string;
+    public players: string[] = [];
+    constructor(host: string) {
+        this.host = host;
+    }
+}
+
+const rooms: Map<string, Room> = new Map();
 
 io.on('connection', (socket) => {
+    const id = Math.random().toString(36).substring(2, 15);
+    let code: string | undefined;
+
     socket.on('room', (request, callback) => {
-        const id = Math.random().toString(36).substring(2, 15);
-        const code = Math.random().toString(36).substring(2, 6);
-        rooms.set(id, code);
-        socket.join(id);
-        callback({ id, code });
+        if(code) return;
+        
+        function newCode() {
+            return Math.random().toString(36).substring(2, 6);
+        }
+        
+        code = newCode();
+        while(rooms.has(code)) {
+            code = newCode();
+        }
+        rooms.set(code, new Room(id));
+        socket.join(code);
+        
+        console.log('Room ' + code + ' created');
+
+        callback({ code, id });
+    });
+
+    socket.on('disconnect', () => {
+        if(!code) return;
+
+        rooms.delete(code);
+        socket.to(code).emit('closed');
+
+        console.log('Room ' + code + ' closed');
     });
 
     socket.on('join', (request, callback) => {
-        const { id, code } = request;
-        if(rooms.has(id) && rooms.get(id) === code) {
-            socket.join(id);
+        const { code } = request;
+        if(rooms.has(code)) {
             callback(true);
         }
         else {

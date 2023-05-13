@@ -38,7 +38,7 @@ services:
     depends_on:
       - game
       - player
-  server: 
+  deploy: 
     build: .
     volumes: 
       - .:/app
