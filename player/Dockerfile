@@ -1,6 +1,6 @@
 FROM node:20
 
-WORKDIR /game
+WORKDIR /player
 
 COPY package*.json ./
 
@@ -8,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=4001
+ENV PORT=4002
 
-EXPOSE 4001
-EXPOSE 443
+EXPOSE 4002
+EXPOSE 444
 
 CMD ["npm", "run", "dev"]

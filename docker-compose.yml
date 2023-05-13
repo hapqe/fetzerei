@@ -1,36 +1,54 @@
 version: '3'
 
 services:
-    game:
-      build: ./game
-      volumes: 
-        - ./game:/game
-      ports:
-        - "4001:4001"
-    game-build:
-      build: ./game
-      volumes: 
-        - ./game:/game
-      command: npm run build
-    dev:
-      build: .
-      volumes: 
-        - .:/app
-      ports:
-        - "4000:4000"
-      environment:
-        - NODE_ENV=development
-      depends_on:
-        - game
-    server: 
-      build: .
-      volumes: 
-        - .:/app
-        - ./game/build:/app/game/build
-      ports:
-        - "80:80"
-      environment:
-        - NODE_ENV=production
-        - PORT=80
-      depends_on:
-        - game-build
+  player:
+    build: ./player
+    volumes: 
+      - ./player:/player
+    ports:
+      - "4002:4002"
+      - "444:444"
+  player-build:
+    build: ./player
+    volumes: 
+      - ./player:/player
+    command: npm run build
+
+  game:
+    build: ./game
+    volumes: 
+      - ./game:/game
+    ports:
+      - "4001:4001"
+      - "443:443"
+  game-build:
+    build: ./game
+    volumes: 
+      - ./game:/game
+    command: npm run build
+    
+  dev:
+    build: .
+    volumes: 
+      - .:/app
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - game
+      - player
+  server: 
+    build: .
+    volumes: 
+      - .:/app
+      - ./game/build:/app/game/build
+      - ./player/build:/app/player/build
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+    depends_on:
+      - game-build
+      - player-build
