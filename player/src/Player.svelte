@@ -1,21 +1,21 @@
 <script lang="ts">
-  import io from 'socket.io-client'
-  let id: string = undefined;
-  
+  import io from "socket.io-client";
+  let id: string | undefined = undefined;
+
   let origin = window.location.origin;
 
-  const socket = io(origin)
+  const socket = io(origin);
 
-  function click() {
-    socket.emit('room', {}, (room) => {
-      console.log(room);
-    });
-  }
+  let code = window.location.pathname.split("/").pop();
 
-  
-
+  socket.emit("join", { code, id }, (info) => {
+    if (info?.error) {
+      alert(info.error);
+      return;
+    }
+    id = info.id;
+    console.log("joined", info);
+  });
 </script>
 
-<main>
-  I AM THE PLAYER
-</main>
+<main>I AM THE PLAYER</main>

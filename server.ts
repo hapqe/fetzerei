@@ -30,6 +30,16 @@ class Room {
     constructor(host: string) {
         this.host = host;
     }
+    join(id: string) {
+        if(this.players.includes(id)) 
+            return { num: this.players.indexOf(id) }
+
+        if(this.players.length >= 4) 
+            return { error: 'Room is full!' }
+
+        this.players.push(id);
+            return { num: this.players.length - 1 }
+    }
 }
 
 const rooms: Map<string, Room> = new Map();
@@ -68,12 +78,13 @@ io.on('connection', (socket) => {
 
     socket.on('join', (request, callback) => {
         const { code } = request;
-        if(rooms.has(code)) {
-            callback(true);
+        let playerId = request.id ?? id;
+
+        if(!rooms.has(code)) {
+            callback({ error: 'Room does not exist!' });
+            return;
         }
-        else {
-            callback(false);
-        }
+        callback({ ...rooms.get(code)!.join(playerId), id: playerId });
     });
 });
 
