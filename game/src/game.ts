@@ -1,4 +1,4 @@
-import './app.css'
+import './game.css'
 import Game from './Game.svelte'
 
 const app = new Game({

@@ -1,13 +1,13 @@
-<div class="screen absolute"></div>
+<main class="screen absolute" />
 
 <style>
-    div {
+    main {
         z-index: -10;
-        background-image: url(grid.png) ;
+        background-image: url(grid.png);
         background-size: 40px;
         image-rendering: pixelated;
         transform: rotate(-45deg) scale(4);
-        opacity: .04;
+        opacity: 0.04;
 
         animation: scroll 20s linear infinite;
     }

@@ -10,23 +10,24 @@
     });
 </script>
 
-<div class='center screen absolute {collapse?"collapse":""}'>
-    <img src="logo.png" alt="">
-</div>
+<main class="pointer-none center screen absolute {collapse ? 'collapse' : ''}">
+    <img src="logo.png" alt="" />
+</main>
 
 <style>
-    div {
+    main {
         flex-direction: column;
         transition: 1000ms ease-in-out;
     }
 
     .collapse img {
-        transform: translateX(calc(-50vw + 25%)) translateY(calc(-50vh + 25%)) scale(.5);
+        transform: translateX(calc(-50vw + 25%)) translateY(calc(-50vh + 25%))
+            scale(0.5);
     }
 
     img {
         height: 50vh;
-        animation: logo .3s ease-in-out;
+        animation: logo 0.3s ease-in-out;
         transition: 1000ms;
     }
 

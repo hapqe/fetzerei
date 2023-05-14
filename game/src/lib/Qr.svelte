@@ -1,16 +1,26 @@
 <script lang="ts">
-    import { code } from "../stores";
+    import { code } from "../gameStores";
 </script>
 
 {#if $code}
-    <a class="absolute center screen bounce" href="{window.location.origin + '/r/' + $code}" target="_blank">
-        <img alt="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={window.location.origin + '/r/' + $code}"/>
+    <a
+        class="absolute center screen bounce"
+        href={window.location.origin + "/r/" + $code}
+        target="_blank"
+    >
+        <img
+            alt="qr"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={window
+                .location.origin +
+                '/r/' +
+                $code}"
+        />
     </a>
 {/if}
 
 <style>
     a {
-        background-image: url('qr-frame.svg');
+        background-image: url("qr-frame.svg");
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;

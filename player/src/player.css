@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+.t-md {
+  transition: all .5s ease-in-out;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto', sans-serif;
+  color: white;
+}
+
+h1,
+h2 {
+  text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000, 4px 4px 0px rgb(0, 0, 0), 4px 0px 0px rgb(0, 0, 0), 2px 4px 0px rgb(0, 0, 0);
+}
+
+h3,
+h2,
+h4 {
+  /* 1px instead of 2 for outline and 2 instad of 4 for shadow */
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000, 2px 2px 0px rgb(0, 0, 0), 2px 0px 0px rgb(0, 0, 0), 1px 2px 0px rgb(0, 0, 0);
+}
+
+@keyframes bounce {
+  0% {
+    opacity: 1;
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bounce {
+  opacity: 0;
+  transform: scale(1);
+  animation: bounce .3s ease-in-out forwards;
+  animation-delay: .1s;
+}

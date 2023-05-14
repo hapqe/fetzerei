@@ -1,4 +1,4 @@
-import './app.css'
+import './player.css'
 import Player from './Player.svelte'
 
 const app = new Player({

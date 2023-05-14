@@ -29,17 +29,42 @@ body {
     opacity: 1;
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     opacity: 1;
-      transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-reverse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(0);
   }
 }
 
 .bounce {
-  opacity: 0;
-  transform: scale(1);
+  transform: scale(0);
   animation: bounce .3s ease-in-out forwards;
+}
+
+.unbounce {
+  animation: bounce-reverse .3s ease-in-out forwards;
+}
+
+.pointer-none {
+  pointer-events: none;
 }
