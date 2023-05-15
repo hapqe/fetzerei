@@ -5,6 +5,7 @@ services:
     build: ./player
     volumes:
       - ./player:/player
+      - ./player/node_modules:/player/node_modules
     ports:
       - "4002:4002"
       - "444:444"
@@ -18,7 +19,7 @@ services:
     build: ./game
     volumes:
       - ./game:/game
-      - /game/node_modules
+      - ./game/node_modules:/game/node_modules
     ports:
       - "4001:4001"
       - "443:443"
@@ -32,7 +33,7 @@ services:
     build: .
     volumes:
       - .:/app
-      - /app/node_modules
+      - ./app/node_modules:/app/node_modules
     ports:
       - "4000:4000"
     environment:
