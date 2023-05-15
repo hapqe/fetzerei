@@ -3,34 +3,36 @@ version: '3'
 services:
   player:
     build: ./player
-    volumes: 
+    volumes:
       - ./player:/player
     ports:
       - "4002:4002"
       - "444:444"
   player-build:
     build: ./player
-    volumes: 
+    volumes:
       - ./player:/player
     command: npm run build
 
   game:
     build: ./game
-    volumes: 
+    volumes:
       - ./game:/game
+      - /game/node_modules
     ports:
       - "4001:4001"
       - "443:443"
   game-build:
     build: ./game
-    volumes: 
+    volumes:
       - ./game:/game
     command: npm run build
-    
+
   dev:
     build: .
-    volumes: 
+    volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - "4000:4000"
     environment:
@@ -38,9 +40,9 @@ services:
     depends_on:
       - game
       - player
-  deploy: 
+  deploy:
     build: .
-    volumes: 
+    volumes:
       - .:/app
       - ./game/build:/app/game/build
       - ./player/build:/app/player/build
