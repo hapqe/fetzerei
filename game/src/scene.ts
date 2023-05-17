@@ -1,4 +1,4 @@
-import type { vec3 } from "gl-matrix";
+import { mat4 } from "gl-matrix";
 import type { Renderer } from "./renderer";
 import { GltfLoader } from "gltf-loader-ts";
 import type { GlTf } from "gltf-loader-ts/lib/gltf";
@@ -10,12 +10,13 @@ interface RenderingData {
     indices: GPUBuffer;
 }
 
-export class Scene {
-    gltf: GlTf;
+export interface Enqueueable {
+    enqueue(pass: GPURenderPassEncoder): void;
+}
 
-    constructor(gltf: GlTf) {
-        this.gltf = gltf;
-    }
+export class Scene implements Enqueueable {
+    gltf: GlTf;
+    camera: mat4;
 
     static async load(path: string, renderer: Renderer) {
         const { device, format } = renderer;
@@ -97,8 +98,7 @@ export class Scene {
                 },
                 primitive: {
                     topology: "triangle-list",
-                    cullMode: "none"
-                },
+                }
             });
 
             const renderingData: RenderingData = {
@@ -110,11 +110,42 @@ export class Scene {
             mesh.renderingData = renderingData;
         }
 
-        return new Scene(gltf);
+        const uniforms = device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        const scene = new Scene();
+        scene.gltf = gltf;
+        scene.camera = Scene.cameraMatrix(gltf);
+        return scene;
     }
 
-    draw(pass: GPURenderPassEncoder) {
-        const gltf = this.gltf;
+    static cameraMatrix(gltf: GlTf) {
+        const camera = gltf.nodes.findIndex(node => node.camera !== undefined);
+        if (camera === -1) return mat4.create();
+
+        const data = gltf.cameras[0];
+        if (data.type === "perspective") {
+            throw new Error("Perspective camera not supported");
+        }
+
+        const { xmag, ymag, zfar, znear } = data.orthographic;
+        const { rotation, translation } = gltf.nodes[camera];
+
+        let view = mat4.ortho(mat4.create(), -xmag, xmag, -ymag, ymag, znear, zfar);
+        const rotationMatrix = mat4.fromQuat(mat4.create(), Float32Array.from(rotation));
+        const translationMatrix = mat4.fromTranslation(mat4.create(), Float32Array.from(translation));
+
+        view = mat4.mul(mat4.create(), view, rotationMatrix);
+        view = mat4.mul(mat4.create(), view, translationMatrix);
+
+        return view;
+    }
+
+
+    enqueue(pass: GPURenderPassEncoder) {
+        const { gltf } = this;
 
         for (const mesh of gltf.meshes) {
             const { pipeline, buffers, indices } = mesh.renderingData as RenderingData;
@@ -124,7 +155,7 @@ export class Scene {
                 pass.setVertexBuffer(i, buffers[i]);
             }
             pass.setIndexBuffer(indices, "uint16");
-            pass.drawIndexed(gltf.accessors[mesh.primitives[0].indices].count, 1, 0, 0, 0);
+            pass.drawIndexed(gltf.accessors[mesh.primitives[0].indices].count);
         }
     }
 }

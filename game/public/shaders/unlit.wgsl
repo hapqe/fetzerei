@@ -9,10 +9,13 @@ struct VertexOut {
   @location(0) uv: vec2f
 }
 
+@group(0) @binding(0)
+var<uniform> mvp: mat4x4f;
+
 @vertex
 fn vertexMain(in: VertexInput) -> VertexOut {
     var out: VertexOut;
-    out.position = vec4f(in.pos, 1.0);
+    out.position = mvp * vec4f(in.pos, 1);
     out.uv = in.uv;
     return out;
 }

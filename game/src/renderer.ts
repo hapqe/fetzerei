@@ -1,17 +1,11 @@
+import type { Enqueueable, Scene } from "./scene";
+
 export class Renderer {
     adapter: GPUAdapter;
-    encoder: GPUCommandEncoder;
     context: GPUCanvasContext;
     device: GPUDevice;
     format: GPUTextureFormat;
-
-    constructor(adapter: GPUAdapter, encoder: GPUCommandEncoder, context: GPUCanvasContext, device: GPUDevice, format: GPUTextureFormat) {
-        this.adapter = adapter;
-        this.encoder = encoder;
-        this.context = context;
-        this.device = device;
-        this.format = format;
-    }
+    onRender: Set<Enqueueable> = new Set();
 
     static async create(canvas: HTMLCanvasElement) {
         if (!navigator.gpu) throw new Error("WebGPU not supported");
@@ -32,6 +26,34 @@ export class Renderer {
 
         const encoder = device.createCommandEncoder();
 
-        return new Renderer(adapter, encoder, context, device, format);
+        device.queue.submit([encoder.finish()]);
+
+        const renderer = new Renderer();
+        renderer.adapter = adapter;
+        renderer.context = context;
+        renderer.device = device;
+        renderer.format = format;
+        return renderer;
+    }
+
+    render() {
+        const encoder = this.device.createCommandEncoder();
+
+        const pass = encoder.beginRenderPass({
+            colorAttachments: [
+                {
+                    clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 0.0 },
+                    view: this.context.getCurrentTexture().createView(),
+                    loadOp: "clear",
+                    storeOp: "store",
+                },
+            ],
+        });
+
+        this.onRender.forEach((renderable) => renderable.enqueue(pass));
+
+        pass.end();
+
+        this.device.queue.submit([encoder.finish()]);
     }
 }

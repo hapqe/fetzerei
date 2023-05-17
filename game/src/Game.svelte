@@ -5,7 +5,8 @@
   import Background from "./lib/Background.svelte";
   import Logo from "./lib/Logo.svelte";
   import Bubbles from "./lib/Bubbles.svelte";
-  import GameScene from "./GameScene.svelte";
+  import Canvas from "./Canvas.svelte";
+  import Scene from "./Scene.svelte";
   let id: string = undefined;
 
   let origin = window.location.origin;
@@ -23,6 +24,8 @@
   socket.on("left", (info) => {
     $joined[info!.num] = false;
   });
+
+  let snagg = false;
 </script>
 
 <svelte:window
@@ -34,6 +37,10 @@
   <!-- <Logo />
   <Qr />
   <Bubbles /> -->
+  <Canvas>
+    <Scene gltf="scene.glb" />
+  </Canvas>
   <Background />
-  <GameScene />
+
+  <button on:click={() => (snagg = !snagg)} class="absolute">Hello</button>
 </main>
