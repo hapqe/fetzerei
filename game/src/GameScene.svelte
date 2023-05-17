@@ -1,27 +1,34 @@
 <script lang="ts">
-    import { Canvas, T } from "@threlte/core";
+    import { onMount } from "svelte";
     import { windowHeight, windowWidth } from "./gameStores";
-    import Cursor from "./Cursor.svelte";
+    import { Scene } from "./scene";
+    import { Renderer } from "./renderer";
+    let canvas: HTMLCanvasElement;
 
-    let width = window.innerWidth;
+    onMount(async () => {
+        const renderer = await Renderer.create(canvas);
+        const gltf = await Scene.load("test.glb", renderer);
 
-    let camera;
-    $: if (camera) camera.lookAt(0, 0, 0);
+        const pass = renderer.encoder.beginRenderPass({
+            colorAttachments: [
+                {
+                    clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 0.0 },
+                    view: renderer.context.getCurrentTexture().createView(),
+                    loadOp: "clear",
+                    storeOp: "store",
+                },
+            ],
+        });
+
+        gltf.draw(pass);
+        pass.end();
+        renderer.device.queue.submit([renderer.encoder.finish()]);
+    });
 </script>
 
-<main class="screen">
-    <Canvas>
-        <T.OrthographicCamera
-            bind:ref={camera}
-            makeDefault
-            position={[10, 8, 10]}
-            zoom={Math.min($windowWidth * 0.65, $windowHeight * 1.2)}
-        />
-        <T.Mesh rotation.x={-Math.PI / 2}>
-            <T.PlaneGeometry />
-            <T.MeshToonMaterial color="#fff" />
-        </T.Mesh>
-
-        <Cursor />
-    </Canvas>
-</main>
+<canvas
+    width={$windowWidth}
+    height={$windowHeight}
+    bind:this={canvas}
+    class="screen"
+/>

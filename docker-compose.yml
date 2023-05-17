@@ -18,6 +18,8 @@ services:
     build: ./game
     volumes:
       - ./game:/game
+      - ./game/node_modules:/game/node_modules
+      - /game/node_modules
     ports:
       - "4001:4001"
       - "443:443"

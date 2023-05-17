@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [svelte()],
   server: {
     strictPort: true,
-    port: 4001,
+    port: 4002,
     hmr: {
-      port: 443,
+      port: 444,
     },
   }
 })
